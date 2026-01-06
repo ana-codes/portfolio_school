@@ -1,0 +1,113 @@
+body {
+  margin: 0;
+  font-family: Helvetica, Arial, sans-serif;
+  background: #0e0e0e;
+  color: #eee;
+}
+p{
+  padding-bottom: 5vh;
+  color:#80eaed;
+}
+
+a{
+  color:#80bced;
+}
+h1, h2, h3 {
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  color: #d0baff;
+}
+
+#hero {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+}
+
+#hero video, #hero canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+#hero video {
+  opacity: 0.45;
+}
+
+.hero-text {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+section {
+  padding: 4rem 10%;
+}
+
+.gallery {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.work-item {
+  width: calc(33% - 1rem);
+  position: relative;
+}
+
+.work-item img {
+  width: 100%;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  opacity: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: opacity 0.3s;
+}
+
+.work-item:hover .overlay {
+  opacity: 1;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.9);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  max-width: 80%;
+}
+
+.close {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  font-size: 2rem;
+  cursor: pointer;
+}
+
+.timeline {
+  list-style: none;
+  padding-left: 1rem;
+}
+
+.timeline li {
+  margin-bottom: 1rem;
+  border-left: 2px solid #eee;
+  padding-left: 1rem;
+}
