@@ -1,11 +1,53 @@
 
-// Faded metallic + old-film background
-// Straighter vertical impression, slower motion
+// heroCanvas_background_with_overlay.js
+// Background animation + upper-left-third image overlay (Dropbox)
 
 const canvas = document.getElementById('heroCanvas');
 const ctx = canvas.getContext('2d');
 
-function resize() {
+// ---------------------------
+// Overlay image (Dropbox)
+// ---------------------------
+const OVERLAY_IMG_URL = "https://uc3151e97e0bf303dd805e8b389f.previews.dropboxusercontent.com/p/thumb/AC7ywzgokbRhRNvRJFfzNLGnM9VWqpYDDpavKhZeH2fTYYqnhj3zXIYzG-uaRiRoH8MJ1Fen1fYotyjrR0hPeBb3i_xSAY_LV6IPflEXFwXOf8SNWN_yP1R8ADbyxho0SbFkJirEM0k_W84TDIkKyc5C3xpjNIm67pRZGhyLZR2beILyfYqbeCl4XSHqyKZ38WP4zm2lEawLixt2eGUjc2aemGdV-RFgw2kJDUogPCnXusal200lQXwuszZ4j8yqT85vyY9Di_cjKW51tjv12noe-nUcrxJ1GhAwf-U5Pf1MxiFv8XxKNsSOtOKD3x8gCNx8rBW3c7e5UgWt5h_GlnEyl3NiAEZ1ipVMU5wL8WE2Med_qz6ZxBoOtXd7hgiz-v0K2Qhd-g9f9GOa5PG5p-R8/p.jpeg?is_prewarmed=true";
+
+const overlayImg = new Image();
+overlayImg.crossOrigin = "anonymous";
+overlayImg.src = OVERLAY_IMG_URL;
+
+let overlayReady = false;
+overlayImg.onload = () => overlayReady = true;
+overlayImg.onerror = () => console.warn("Overlay image failed to load");
+
+function drawOverlayImage(){
+  if (!overlayReady) return;
+
+  const w = canvas.width;
+  const h = canvas.height;
+
+  const regionW = w / 3;
+  const regionH = h / 3;
+
+  const padX = Math.max(16, w * 0.03);
+  const padY = Math.max(16, h * 0.04);
+
+  const boxW = regionW - padX * 1.2;
+  const boxH = regionH - padY * 1.2;
+
+  const imgW = overlayImg.naturalWidth;
+  const imgH = overlayImg.naturalHeight;
+
+  const scale = Math.min(boxW / imgW, boxH / imgH);
+  const drawW = imgW * scale;
+  const drawH = imgH * scale;
+
+  ctx.save();
+  ctx.globalAlpha = 0.92;
+  ctx.imageSmoothingEnabled = true;
+  ctx.drawImage(overlayImg, padX, padY, drawW, drawH);
+  ctx.restore();
+}
+
+function resize(){
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 }
@@ -30,11 +72,11 @@ let time = 0;
 const strands = Array.from({length: STRANDS}, () => ({
   seed: Math.random()*10000,
   y: Math.random(),
-  amp: 6 + Math.random()*18,      // much flatter
-  freq: 0.2 + Math.random()*0.6,  // lower frequency
+  amp: 6 + Math.random()*18,
+  freq: 0.2 + Math.random()*0.6,
   phase: Math.random()*Math.PI*2,
   width: 0.35 + Math.random()*1.0,
-  speed: (Math.random()*0.18+0.05)*(Math.random()<0.5?-1:1) // slower
+  speed: (Math.random()*0.18+0.05)*(Math.random()<0.5?-1:1)
 }));
 
 function drawStrand(s){
@@ -45,11 +87,8 @@ function drawStrand(s){
   for(let i=0;i<=SEGMENTS;i++){
     const p = i/SEGMENTS;
     const x = p*w;
-
-    // Subtle undulation only (mostly straight)
     const wave = Math.sin(s.phase + time*0.0009*s.speed) * s.amp;
     const jitter = (noise(s.seed + p*10 + time*0.0015)-0.5)*4;
-
     const y = (s.y*h + wave + jitter + h) % h;
 
     if(i===0) ctx.moveTo(x,y);
@@ -99,12 +138,11 @@ function drawGrain(){
 
 function animate(){
   time++;
-
-  // slower fade for calmer motion
   ctx.fillStyle = 'rgba(0,0,0,0.55)';
   ctx.fillRect(0,0,canvas.width,canvas.height);
 
   strands.forEach(drawStrand);
+  drawOverlayImage();
   drawFilmLines();
   drawGrain();
 
